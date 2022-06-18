@@ -1,4 +1,5 @@
 from ast import Global
+from cgitb import text
 from email.mime import image
 from tkinter import *
 from tkinter import ttk
@@ -15,10 +16,30 @@ from tkinter import messagebox
 db = Database('imageDB.db')
 
 def readData():
+    clearTreeview()
     print("read data from database")
+    for row in db.fetch():
+        tree.insert(parent='', index='end', iid=row, text='',values=(row[0],row[1],row[2]))
 
 def readSelectedData():
     print("Read treeview selected data from database")
+
+def selectFromTreeview(event):
+    print("")
+    mainText_entry.delete(0, END)
+    noteText_entry.delete(0, END)
+
+    global selected_text
+    index = tree.focus()
+    selected_text = tree.item(index, 'values')
+    mainText_entry.insert(END, selected_text[1])
+    noteText_entry.insert(END, selected_text[2])
+    print(selected_text[0])
+    if selected_text[0] == '':
+        retriveImage(0)
+    else:
+        retriveImage(selected_text[0])
+
 
 
 def refText_Text(e):
@@ -33,12 +54,17 @@ def clearEntry():
     noteText_entry.delete(0, END)
     noteText_entry.insert(0, 'Notes')
 
+def clearTreeview():
+    for record in tree.get_children():
+        tree.delete(record)
+
 def addText():
     if mainText_entry.get() == "Text" or noteText_entry.get() == "Notes" or mainText_entry.get() == "" or noteText_entry.get() == "":
         messagebox.showerror('What ??', 'Please enter correct and all details !!')
         return
     imageData = convertImgToBinary(imageName)
     db.insert(mainText_entry.get(), noteText_entry.get(), imageData)
+    clearEntry()
     
 def delText():
     print("Deleting")
@@ -54,7 +80,7 @@ def selectImage():
     # global imagePath
     global imageName
     imageName = filedialog.askopenfilename(initialdir= "/", title= "Select an image to upload", filetypes=(("png files", "*.PNG"),("jpeg files", "*.jpeg"),("All files","*.*")))
-    print(imageName)
+    #print(imageName)
     label = ttk.Label(mainframe, text="")
     label.configure(text= imageName)
     
@@ -73,9 +99,8 @@ def binaryToImage(data):
     imageLabel.image = photo
     imageLabel.grid(row=2, column=0, columnspan=2, sticky=W, padx=20)
 
-def retriveImage():
-    id_No = 6 #id number to retrive image for
-    imageData = db.fetchOne(id_No)
+def retriveImage(id_no):
+    imageData = db.fetchOne(id_no)
     binaryToImage(imageData)
     
     
@@ -110,7 +135,7 @@ ttk.Button(mainframe, text = "Image?",command = selectImage).grid(row=0, column=
 
 # Add, delete, update and copy buttons
 ttk.Button(mainframe, text = "Add",command = addText).grid(row=1, column=0, padx=20, pady=5, sticky=(W))
-ttk.Button(mainframe, text = "Delete",command = clearEntry).grid(row=1, column=1, padx=5)
+ttk.Button(mainframe, text = "Delete",command = delText).grid(row=1, column=1, padx=5)
 ttk.Button(mainframe, text = "Update",command = updateText).grid(row=1, column=2, padx=5, sticky=(E))
 ttk.Button(mainframe, text = "Copy",command = copyText).grid(row=1, column=3, padx=5)
 
@@ -128,6 +153,18 @@ tree.heading('id', text='ID', anchor=CENTER)
 tree.heading('text', text='Text to copy', anchor=CENTER)
 tree.heading('notes', text='Notes', anchor=CENTER)
 tree.grid(row=2, column=2, columnspan=2, padx=20, sticky='W')
+
+
+tree.bind('<ButtonRelease-1>', selectFromTreeview)
+readData()
+focusID = tree.get_children()
+if focusID:
+    tree.focus(focusID[0])
+    tree.selection_set(focusID[0])
+    retriveImage(focusID[0][0])
+
+
+#retriveImage(selected_text[0])
 
 
 mainText_entry.bind("<FocusIn>", refText_Text)
