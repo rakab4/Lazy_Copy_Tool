@@ -18,6 +18,11 @@ class Database:
         self.cur.execute("SELECT image FROM dropTable WHERE id=?", (id,))
         rows = self.cur.fetchall()[0][0]
         return rows
+    
+    def fetchNoImg(self, id):
+        self.cur.execute("SELECT image FROM noImgDB WHERE id=?", (id,))
+        rows = self.cur.fetchall()[0][0]
+        return rows
 
     def insert(self, str, notes, image):
         self.cur.execute("INSERT INTO dropTable VALUES (NULL, ?, ?, ?)",

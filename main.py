@@ -17,7 +17,6 @@ db = Database('imageDB.db')
 
 def readData():
     clearTreeview()
-    print("read data from database")
     for row in db.fetch():
         tree.insert(parent='', index='end', iid=row, text='',values=(row[0],row[1],row[2]))
 
@@ -25,7 +24,6 @@ def readSelectedData():
     print("Read treeview selected data from database")
 
 def selectFromTreeview(event):
-    print("")
     mainText_entry.delete(0, END)
     noteText_entry.delete(0, END)
 
@@ -34,12 +32,16 @@ def selectFromTreeview(event):
     selected_text = tree.item(index, 'values')
     mainText_entry.insert(END, selected_text[1])
     noteText_entry.insert(END, selected_text[2])
-    print(selected_text[0])
+    #print(selected_text[0])
     if selected_text[0] == '':
-        retriveImage(0)
+        retriveNoImg()
     else:
+        #retriveNoImg()
         retriveImage(selected_text[0])
 
+def retriveNoImg():
+    noImageData = db.fetchNoImg(0)
+    binaryToImage(noImageData)
 
 
 def refText_Text(e):
@@ -52,6 +54,7 @@ def clearEntry():
     mainText_entry.delete(0, END)
     mainText_entry.insert(0, 'Text')
     noteText_entry.delete(0, END)
+    
     noteText_entry.insert(0, 'Notes')
 
 def clearTreeview():
@@ -59,34 +62,58 @@ def clearTreeview():
         tree.delete(record)
 
 def addText():
+    global imageName
     if mainText_entry.get() == "Text" or noteText_entry.get() == "Notes" or mainText_entry.get() == "" or noteText_entry.get() == "":
         messagebox.showerror('What ??', 'Please enter correct and all details !!')
         return
-    imageData = convertImgToBinary(imageName)
+    try:
+        imageData = convertImgToBinary(imageName)
+    except:
+        imageData = noImageBlobDataFn()
     db.insert(mainText_entry.get(), noteText_entry.get(), imageData)
     clearEntry()
+    readData()
+    print(imageName)
+    imageName = ''
+
+
     
 def delText():
-    print("Deleting")
+    db.delete(selected_text[0])
+    readData()
     
 def updateText():
-    print("Updating")
-    retriveImage()
-    
+    global imageName
+    try:
+        imageData = convertImgToBinary(imageName)
+    except:
+        imageData = db.fetchOne(selected_text[0])
+    db.update(selected_text[0],mainText_entry.get(), noteText_entry.get(), imageData)
+    readData()
+    imageName = ''
+
 def copyText():
     print("Copied")
 
 def selectImage():
-    # global imagePath
     global imageName
     imageName = filedialog.askopenfilename(initialdir= "/", title= "Select an image to upload", filetypes=(("png files", "*.PNG"),("jpeg files", "*.jpeg"),("All files","*.*")))
-    #print(imageName)
+    print(imageName)
     label = ttk.Label(mainframe, text="")
     label.configure(text= imageName)
+    if imageName == '':
+        imageName = 'noImage'
     
+def noImageBlobDataFn():
+    noImageBlobData = db.fetchNoImg(0)
+    return noImageBlobData
+    
+
 def convertImgToBinary(imageName):
     with open(imageName, 'rb') as file:
         blobData = file.read()
+    print(imageName)
+    imageName = "/"
     return blobData
 
 def binaryToImage(data):
@@ -161,7 +188,7 @@ focusID = tree.get_children()
 if focusID:
     tree.focus(focusID[0])
     tree.selection_set(focusID[0])
-    retriveImage(focusID[0][0])
+    #retriveImage(focusID[0][0])
 
 
 #retriveImage(selected_text[0])
