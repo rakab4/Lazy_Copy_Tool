@@ -1,12 +1,6 @@
-from ast import Global
-from cgitb import text
-from email.mime import image
-from telnetlib import TELNET_PORT
 from tkinter import *
 from tkinter import ttk
 from tkinter import filedialog
-from turtle import width
-from types import CellType
 from PIL import Image, ImageTk
 from imageDB import Database
 from io import BytesIO
