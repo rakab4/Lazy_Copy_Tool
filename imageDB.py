@@ -8,6 +8,7 @@ class Database:
         self.cur.execute(
             "CREATE TABLE IF NOT EXISTS dropTable (id INTEGER PRIMARY KEY AUTOINCREMENT, str TEXT, notes TEXT, image BLOB)")
         self.conn.commit()
+        
 
     def fetch(self):
         self.cur.execute("SELECT * FROM dropTable")
@@ -19,11 +20,6 @@ class Database:
         rows = self.cur.fetchall()[0][0]
         return rows
     
-    def fetchNoImg(self, id):
-        self.cur.execute("SELECT image FROM noImgDB WHERE id=?", (id,))
-        rows = self.cur.fetchall()[0][0]
-        return rows
-
     def insert(self, str, notes, image):
         self.cur.execute("INSERT INTO dropTable VALUES (NULL, ?, ?, ?)",
                          (str, notes, image))
