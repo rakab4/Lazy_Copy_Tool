@@ -17,9 +17,6 @@ def readData():
     for row in db.fetch():
         tree.insert(parent='', index='end', iid=row, text='',values=(row[0],row[1],row[2]))
 
-def readSelectedData():
-    print("Read treeview selected data from database")
-
 def selectFromTreeview(event):
     mainText_entry.delete(0, END)
     noteText_entry.delete(0, END)
@@ -60,7 +57,7 @@ def addText():
     db.insert(mainText_entry.get(), noteText_entry.get(), imageData)
     clearEntry()
     readData()
-    print(imageName)
+    #print(imageName)
     imageName = ''
 
 def delTextConfirmation():
@@ -94,7 +91,7 @@ def copyText():
 def selectImage():
     global imageName
     imageName = filedialog.askopenfilename(initialdir= "/", title= "Select an image to upload", filetypes=(("png files", "*.PNG"),("jpeg files", "*.jpeg"),("All files","*.*")))
-    print(imageName)
+    #print(imageName)
     label = ttk.Label(mainframe, text="")
     label.configure(text= imageName)
     if imageName == '':
@@ -103,7 +100,7 @@ def selectImage():
 def convertImgToBinary(imageName):
     with open(imageName, 'rb') as file:
         blobData = file.read()
-    print(imageName)
+    #print(imageName)
     imageName = "/"
     return blobData
 
