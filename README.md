@@ -1,4 +1,4 @@
-As the name of software says, it is a copy tool which copy the STRING to clipboard so user can paste it to anywhere. 
+As the name of software says, it is a copy tool which copies the STRING to clipboard so user can paste it to anywhere. 
 
 ![image](https://user-images.githubusercontent.com/14190647/182059184-0d3a79c4-fc61-4035-83ef-2c534fd4feba.png)
 
