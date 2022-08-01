@@ -10,4 +10,7 @@ If you're a data entry associate, you might want to add repetitive NAMES, ADDRES
 
 Give it a try and if you have any feedback, feel free to contact me or download the code, play around. 
 
+IMPORTANT NOTE: Root directory must have noImg.jpg image which will be default image in case you don't set any image to string. 
+
+
 P.S: I am not an expert programmer, I am still learning. This application is written in non-OOP python because I am still learning OOP. 
